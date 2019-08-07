@@ -21,6 +21,9 @@
 
 
 ## Figure 3
+
+ ![F3a](figures/Figure_3_hist_freq_l_age_by_sex.png)
+
  ![F3a](figures/Figure 3 hist_freq_l_age_by_sex.png)
 
  ![F3b](figures/Figure 3 hist_freq_pt_age_by_sex.png)
