@@ -1,7 +1,7 @@
 # Studying the demographic, comorbidity, and antibiotic prescription patterns of Post-Treatment Lyme Disease Syndrome with large medical claims data
 
 
-<!––
+<!---
 ## Authors
 - Ming Kei (Jake) Chung
   - github: [\@jakemkc](http://github.com/jakemkc)
@@ -14,7 +14,7 @@
 - Chirag J. Patel
   - github: [\@chiragjp](http://github.com/chiragjp)
   - web: [www.chiragjpgroup.org](http://www.chiragjpgroup.org)
--->
+--->
 
 ## Abstract
 ### *BACKGROUND*
