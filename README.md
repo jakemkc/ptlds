@@ -34,10 +34,8 @@ PTLDS patients have more complaints of anemia, hyperlipidemia, and osteoarthrosi
 - This github repository hosts analytical materials for analyzing Lyme and PTLDS using adminstrative claims data.
 - Code for data clean-up, processing, analysis, and visulization can be found on [GitHub](https://github.com/jakemkc/ptlds)
 - Main findings of our study can be found [here](results/results.md)
-
-<!--
+<!---
 - Preprint paper can be downloaded from [BioRxiv](https://doi.org/10.1101/175513)
--->
-
+--->
 - Please contact us for further information, thank you.
 
