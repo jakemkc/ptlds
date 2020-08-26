@@ -5,15 +5,11 @@ rm(list=ls()) # clear workspace;  # ls() # list objects in the workspace
 cat("\014")   # same as ctrl-L
 options(max.print=3000) # default 1000, and rstudio set at 5000
 options(warn=1) # default = 0. To check loop warnings
-# quartz(height=6, width=8)
-# dev.off() # reset par
-
 
 
 
 # Load data
 load("/Volumes/O2_transfer/data/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata") 
-
 lyme3como <- readRDS("/Volumes/O2_transfer/data/SQL/lymecomo113018.rds")  # lyme
 
 
@@ -23,7 +19,7 @@ lyme3como <- readRDS("/Volumes/O2_transfer/data/SQL/lymecomo113018.rds")  # lyme
 
 library(tidyverse); library(lubridate); library(CGPfunctions)
 
-# I only extracted lyme's as one file in aetna server
+# only extracted lyme's as one file in aetna server
 lymecomo <- lyme3como[which(lyme3como$MemberID %in% lyme$MemberId), ]
 clymecomo <- lyme3como[which(lyme3como$MemberID %in% clyme$MemberId), ]
 ptldscomo <- lyme3como[which(lyme3como$MemberID %in% ptlds$MemberId), ]
@@ -71,7 +67,7 @@ tmp1 <- freqCount(clymecomo) %>% filter(yeartype == "p2_pre1") %>% distinct %>% 
 tmp2 <- freqCount(clymecomo) %>% filter(yeartype == "p4_post1") %>% distinct %>% group_by(coICD) %>% count %>% arrange(desc(n))
 
 intersect(tmp1$coICD[1:10], tmp2$coICD[1:10]) %>% length # 10 highest abundant icd to look at
-top10clymeco<- intersect(tmp1$coICD[1:10], tmp2$coICD[1:1:10]) # %>% dput 
+top10clymeco<- intersect(tmp1$coICD[1:10], tmp2$coICD[1:10]) # %>% dput 
 
 
 tmp1 <- freqCount(ptldscomo) %>% filter(yeartype == "p2_pre1") %>% distinct %>% group_by(coICD) %>% count %>% arrange(desc(n))
@@ -328,10 +324,7 @@ chronicDisease = list(
         '016.05',
         '016.06',
         '095.4',
-        '189.0',
-        '189.9',
         '223.0',
-        '236.91',
         '249.40',
         '249.41',
         '250.40',
@@ -352,7 +345,6 @@ chronicDisease = list(
         '404.93',
         '440.1',
         '442.1',
-        '572.4',
         '580.0',
         '580.4',
         '580.81',
@@ -430,65 +422,35 @@ chronicDisease = list(
         '496'),
     Diabetes = c(
         '249.00',
-        '249.01',
         '249.10',
-        '249.11',
         '249.20',
-        '249.21',
         '249.30',
-        '249.31',
         '249.40',
         '249.41',
         '249.50',
-        '249.51',
         '249.60',
-        '249.61',
         '249.70',
-        '249.71',
         '249.80',
-        '249.81',
         '249.90',
-        '249.91',
         '250.00',
-        '250.01',
-        '250.02',
-        '250.03',
         '250.10',
         '250.11',
-        '250.12',
-        '250.13',
         '250.20',
-        '250.21',
-        '250.22',
-        '250.23',
         '250.30',
-        '250.31',
-        '250.32',
-        '250.33',
         '250.40',
         '250.41',
         '250.42',
         '250.43',
         '250.50',
         '250.51',
-        '250.52',
-        '250.53',
         '250.60',
         '250.61',
-        '250.62',
-        '250.63',
         '250.70',
         '250.71',
-        '250.72',
         '250.73',
         '250.80',
         '250.81',
-        '250.82',
-        '250.83',
         '250.90',
-        '250.91',
-        '250.92',
-        '250.93',
         '357.2',
         '362.01',
         '362.02',
@@ -702,13 +664,6 @@ chronicDisease = list(
         '733.03',
         '733.09'),
     Rheumatoid_Arthritis = c(
-        '714.0',
-        '714.1',
-        '714.2',
-        '714.30',
-        '714.31',
-        '714.32',
-        '714.33',
         '715.00',
         '715.04',
         '715.09',
@@ -1049,11 +1004,9 @@ p <- newggslopegraph(
 
 ## Join comorbidity info to lyme for a cross-over wide format df
 
-
 mcnemarTest <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p4_post1) {
   tmp1 <- ptldscomoClassInt %>% filter(yeartype == "p2_pre1", chronicClass == Rheumatoid_Arthritis)
-  
-  # it could be "715.00 Rheumatoid_Arthritis" and "715.90 Rheumatoid_Arthritis" for the same guy as two rows
+
   tmp2 <- tmp1 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct() # remove duplicate as disease instead of ICD
   
   tmp3 <- left_join(ptlds, tmp2, by = c("MemberId" = "MemberID"))
@@ -1066,8 +1019,8 @@ mcnemarTest <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p4_post1
   tmp6 <- left_join(tmp3, tmp5, by = c("MemberId" = "MemberID"))
  
   ## replace NA in chronic varaible
-  tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no") # .x = pre as I join pre first
-  tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no") # .y = post as I join post later
+  tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no") 
+  tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no") 
   
   ## create table
   mat1 <- table(tmp6$chronicClass.x, tmp6$chronicClass.y)
@@ -1101,7 +1054,6 @@ ptldsMcNemar$fdr <- p.adjust(ptldsMcNemar$pre_1_post_1)
 mcnemarPercentPre <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p4_post1) {
     tmp1 <- ptldscomoClassInt %>% filter(yeartype == "p2_pre1", chronicClass == Rheumatoid_Arthritis)
     
-    # it could be "715.00 Rheumatoid_Arthritis" and "715.90 Rheumatoid_Arthritis" for the same guy as two rows
     tmp2 <- tmp1 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct() # remove duplicate as disease instead of ICD
     
     tmp3 <- left_join(ptlds, tmp2, by = c("MemberId" = "MemberID"))
@@ -1114,8 +1066,8 @@ mcnemarPercentPre <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p4
     tmp6 <- left_join(tmp3, tmp5, by = c("MemberId" = "MemberID"))
     
     ## replace NA in chronic varaible
-    tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no") # .x = pre as I join pre first
-    tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no") # .y = post as I join post later
+    tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no") 
+    tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no") 
     
     ## percentage of disease
     tmp7 <- summarytools::freq(tmp6$chronicClass.x, order = "freq")
@@ -1143,8 +1095,8 @@ mcnemarPercentPost <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p
     tmp6 <- left_join(tmp3, tmp5, by = c("MemberId" = "MemberID"))
     
     ## replace NA in chronic varaible
-    tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no") # .x = pre as I join pre first
-    tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no") # .y = post as I join post later
+    tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no")
+    tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no")
     
     ## percentage of disease
     tmp7 <- summarytools::freq(tmp6$chronicClass.y, order = "freq")
@@ -1332,6 +1284,8 @@ contrasts(geedf$lymeDisease) # lymedisease: 0 = lyme, 1 = ptlds
 ## RUN GEE glm 
 library(geepack); library(broom); library(tidyverse)
 
+
+## **********************
 ## all ages
 RunGeeGlm <- function(Rheumatoid_Arthritis, geedf) {
   tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis)
@@ -1344,21 +1298,46 @@ RunGeeGlmOR <- function(Rheumatoid_Arthritis, geedf) {
   tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis)
   tmp2 <- geeglm(outcome ~ TP*lymeDisease + age + MemberGender, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
   tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
-  # only estimate and low/high CI are in OR unit, SE is in log odds original unit
   tmp3$chronicDisease <- Rheumatoid_Arthritis
   return(tmp3)
 }
 
 
-# Use OR
-# maptmp2 <- map(names(chronicDisease), possibly(RunGeeGlm, NA), geedf)
+# Use OR function
 maptmp2 <- map(names(chronicDisease), possibly(RunGeeGlmOR, NA), geedf)
+
+## Extract results to paper table 2. easy way
+geeEstdf <- bind_rows(maptmp2)
+geeEstdf$fdr <- p.adjust(geeEstdf$p.value, method = 'fdr')
+
+
+
+# ## START ****************************************************************************************
+## unadjusted 082520
+RunGeeGlmORUnadj082520 <- function(Rheumatoid_Arthritis, geedf) {
+  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis)
+  tmp2 <- geeglm(outcome ~ TP*lymeDisease, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
+  tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
+  tmp3$chronicDisease <- Rheumatoid_Arthritis
+  return(tmp3)
+}
+
+
+# Use OR function
+maptmp2082520 <- map(names(chronicDisease), possibly(RunGeeGlmORUnadj082520, NA), geedf)
 
 
 ## Extract results to paper table 2. easy way
-geeEstdf <- bind_rows(maptmp2) # ignore Acute_Myocardial_Infraaction; filter and copy paste
-geeEstdf$fdr <- p.adjust(geeEstdf$p.value, method = 'fdr')
+geeEstdf082520 <- bind_rows(maptmp2082520) 
+geeEstdf082520$fdr <- p.adjust(geeEstdf082520$p.value, method = 'fdr')
 
+# ## END ****************************************************************************************
+
+
+
+
+
+## **********************
 ## age <= 35
 
 RunGeeGlm35 <- function(Rheumatoid_Arthritis, geedf) {
@@ -1372,19 +1351,42 @@ RunGeeGlm35OR <- function(Rheumatoid_Arthritis, geedf) {
   tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age <= 35)
   tmp2 <- geeglm(outcome ~ TP*lymeDisease + age + MemberGender, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
   tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
-  # only estimate and low/high CI are in OR unit, SE is in log odds original unit
   tmp3$chronicDisease <- Rheumatoid_Arthritis
   return(tmp3)
 }
 
 
 # Use OR
-# maptmp3 <- map(names(chronicDisease), possibly(RunGeeGlm35, NA), geedf)
-
 maptmp3 <- map(names(chronicDisease), possibly(RunGeeGlm35OR, NA), geedf)
 geeEstdf3 <- bind_rows(maptmp3)
 geeEstdf3$fdr <- p.adjust(geeEstdf3$p.value, method = 'fdr')
 
+
+
+
+
+# ## START ****************************************************************************************
+## unadjusted 082520
+RunGeeGlm35ORUnadj082520 <- function(Rheumatoid_Arthritis, geedf) {
+  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age <= 35)
+  tmp2 <- geeglm(outcome ~ TP*lymeDisease, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
+  tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
+  tmp3$chronicDisease <- Rheumatoid_Arthritis
+  return(tmp3)
+}
+
+
+# Use OR
+maptmp3082520 <- map(names(chronicDisease), possibly(RunGeeGlm35ORUnadj082520, NA), geedf)
+geeEstdf3082520 <- bind_rows(maptmp3082520)
+geeEstdf3082520$fdr <- p.adjust(geeEstdf3082520$p.value, method = 'fdr')
+
+# ## END ****************************************************************************************
+
+
+
+
+## **********************
 ## age >35
 
 RunGeeGlm100 <- function(Rheumatoid_Arthritis, geedf) {
@@ -1399,7 +1401,6 @@ RunGeeGlm100OR <- function(Rheumatoid_Arthritis, geedf) {
   tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age > 35)
   tmp2 <- geeglm(outcome ~ TP*lymeDisease + age + MemberGender, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
   tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
-  # only estimate and low/high CI are in OR unit, SE is in log odds original unit
   tmp3$chronicDisease <- Rheumatoid_Arthritis
   return(tmp3)
 }
@@ -1407,12 +1408,32 @@ RunGeeGlm100OR <- function(Rheumatoid_Arthritis, geedf) {
 
 
 # Use OR
-# maptmp4 <- map(names(chronicDisease), possibly(RunGeeGlm100, NA), geedf)
-
 maptmp4 <- map(names(chronicDisease), possibly(RunGeeGlm100OR, NA), geedf)
 geeEstdf4 <- bind_rows(maptmp4)
 geeEstdf4$fdr <- p.adjust(geeEstdf4$p.value, method = 'fdr')
 
 
+
+
+# ## START ****************************************************************************************
+## unadjusted 082520
+
+RunGeeGlm100ORUnadj082520 <- function(Rheumatoid_Arthritis, geedf) {
+  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age > 35)
+  tmp2 <- geeglm(outcome ~ TP*lymeDisease, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
+  tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
+  tmp3$chronicDisease <- Rheumatoid_Arthritis
+  return(tmp3)
+}
+
+
+
+# Use OR
+maptmp4082520 <- map(names(chronicDisease), possibly(RunGeeGlm100ORUnadj082520, NA), geedf)
+geeEstdf4082520 <- bind_rows(maptmp4082520)
+geeEstdf4082520$fdr <- p.adjust(geeEstdf4082520$p.value, method = 'fdr')
+
+
+# ## END ****************************************************************************************
 
 
