@@ -1,6 +1,18 @@
 # Understanding prolonged symptoms of Lyme disease in the U.S. with 9.8 billion health insurance claims records
 
 
+## Authors
+- Ming Kei (Jake) Chung
+  - github: [\@jakemkc](http://github.com/jakemkc)
+  - twitter: [\@jakekei](http://twitter.com/jakekei)
+  - email: jake_chung[at]hms[dot]harvard[dot]edu
+- Mariaelena Caboni
+- Philip Strandwitz
+- Anthony D’Onofrio
+- Chirag J. Patel
+  - github: [\@chiragjp](http://github.com/chiragjp)
+  - web: [www.chiragjpgroup.org](http://www.chiragjpgroup.org)
+
 <!---
 ## Authors
 - Ming Kei (Jake) Chung
@@ -18,16 +30,16 @@
 
 ## Abstract
 ### *BACKGROUND*
-Post treatment Lyme disease syndrome (PTLDS) is used to describe Lyme disease patients who have the infection cured by antibiotic and with persisting symptoms of pain, fatigue, or difficulty thinking. It is an elusive condition with no accurate diagnosis, and hence little is known about the epidemiology, cause, and treatment of PTLDS. Here we use a large nationwide administrative dataset to identify unique aspects of PTLDS that could have diagnostic and etiologic values.
+Post treatment Lyme disease syndrome (PTLDS) is used to describe a condition where Lyme disease patients have the infection cleared by antibiotic treatment but continue to experience persistent non-specific symptoms of fatigue, cognitive impairment, or musculoskeletal pain. The causes, diagnosis, and treatment of PTLDS remain elusive and some attribute the phenomenon to anchoring bias.
 
 ### *METHODS*
-The Aetna insurance claims database consists of more than 9.8 billion billing and 1.4 billion prescription records between year 2008 to 2016. We defined PTLDS based on its symptomology and investigated the 1) demographic, 2) comorbidity, and 3) antibiotic usage patterns of Lyme and PTLDS.
+The insurance claims database contained more than 9.8 billion billing records between 2008 and 2016. We 1) used a case-control design to test the associations of chronic fatigue, cognitive impairment, and musculoskeletal pain with Lyme disease (n = 244,463), and 2) employed a crossover design to investigate the association of 19 chronic conditions with PTLDS over Lyme disease (n = 45,938).
 
 ### *RESULTS* 
-The age and temporal distributions and their by sex patterns were similar between Lyme and PTLDS. We found that both Lyme and PTLDS were spreading to inland states when comparing the spatial maps of 2009 to 2013. The co-occurence of 3 out of 19 chronic conditions were significantly higher after Lyme diagnosis in PTLDS versus Lyme -- odds ratio and 95% CI for anemia, hyperlipidemia, and osteoarthrosis were 1.46 (1.11-1.92), 1.39 (1.15-1.68), and 1.62 (1.23-2.12) respectively. For antibiotic prescription patterns, we found no significant differences between PTLDS and Lyme.
+We found that chronic fatigue (OR 2.52, 95% CI 2.44–2.60) and musculoskeletal pain (OR 1.51, 95% CI 1.47–1.56) were associated with Lyme disease. The associations remained robust after adjusting for co-occurring chronic conditions and with incrementally more precise definition of Lyme cases. The PTLDS-to-Lyme patient ratio was 3.42%. Compared with Lyme disease cases, we found an enrichment of anemia (OR 1.46, 95% CI 1.11–1.92), hyperlipidemia (OR 1.39, 95% CI 1.15–1.68), and osteoarthrosis (OR 1.62, 95% CI 1.23–2.12) in PTLDS patients. 
 
 ### *CONCLUSION* 
-PTLDS patients have more complaints of anemia, hyperlipidemia, and osteoarthrosis. Determining whether these comorbidities are simply confounding or sharing an underlying biological mechanism with PTLDS require further investigation.
+Chronic fatigue and musculoskeletal pain were sequelae associated with Lyme disease patients, suggesting the existence of PTLDS. Identified comorbidities of PTLDS may be a potential complement to the existing guideline for better diagnosis of the syndrome.
 
 
 ## Getting Started
