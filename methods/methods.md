@@ -1,4 +1,5 @@
-# Epidemiological Study of Post-Treatment Lyme Disease Syndrome with Large Medical Claims Data
+# Understanding prolonged symptoms of Lyme disease in the U.S. with 9.8 billion health insurance claims records
+
 
 <!--
 *Submitted for peer review, Fall 2017*
