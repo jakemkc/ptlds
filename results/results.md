@@ -1,4 +1,4 @@
-# Epidemiological Study of Post-Treatment Lyme Disease Syndrome with Large Medical Claims Data
+# Understanding prolonged symptoms of Lyme disease in the U.S. with 9.8 billion health insurance claims records
 
 <!--
 *Submitted for peer review, Fall 2017*
@@ -17,8 +17,6 @@
 - Chirag J. Patel
   - github: [\@chiragjp](http://github.com/chiragjp)
   - web: [www.chiragjpgroup.org](http://www.chiragjpgroup.org)
---> 
-
 
 ## Figure 3
  ![F3a](figures/Figure_3_hist_freq_l_age_by_sex)
@@ -46,9 +44,11 @@ Figure 4. Temporal changes of Lyme diseases. A: Lyme disease; B: PTLDS. We count
  ![F5d](figures/Figure_5_map_ptlds_count_2013.png)
 
 Figure 5. Spatial distribution of Lyme diseases. A: Lyme disease; B: PTLDS. We counted the number of patients in each ZIP Code Tabulation Areas. Distributions in 2009 and 2013 are shown.
- 
 
-## Figure 6
+--> 
+
+
+## Figure 2
  ![F6a](figures/Figure_6_lymecomoClass.png)
 
  ![F6b](figures/Figure_6_lymecomoClassAgeold35.png)
@@ -61,7 +61,7 @@ Figure 5. Spatial distribution of Lyme diseases. A: Lyme disease; B: PTLDS. We c
 
  ![F6f](figures/Figure_6_ptldscomoClassAgeyoung35.png)
 
-Figure 6. Slopegraph showing the changes in 19 comorbidity of Lyme diseases. A: Lyme disease; B: PTLDS. From top to bottom: all ages, age ≤ 35, and age > 35. We tracked the comorbidity records of 44 420 Lyme and 1518 PTLDS patients, and the numbers shown in the figures represent the percentage of patients with the corresponding comorbidity in a particular period. In each plot, a 4-year period is shown, starting from one year before and 2 years after the baseline.  
+Figure 2. Slopegraphs showing the changes in 19 comorbidities. A: Lyme disease; B: PTLDS. From top to bottom: all ages, age ≤ 35, and age > 35. We tracked the comorbidity records of 44,420 Lyme and 1,518 PTLDS patients, and the numbers shown in the figures represent the percentage of patients with the corresponding comorbidity in a particular period. In each plot, a 4-year period is shown, starting from one year before and 2 years after the baseline. The enrichment of conditions at the baseline is due to the 100% contact rate of the patients with the health care system.
 
 
 
