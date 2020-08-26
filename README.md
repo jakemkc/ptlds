@@ -1,4 +1,4 @@
-# Studying the demographic, comorbidity, and antibiotic prescription patterns of Post-Treatment Lyme Disease Syndrome with large medical claims data
+# Understanding prolonged symptoms of Lyme disease in the U.S. with 9.8 billion health insurance claims records
 
 
 <!---
