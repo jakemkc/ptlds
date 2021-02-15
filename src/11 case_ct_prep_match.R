@@ -15,6 +15,9 @@ ctSQLCtIcd <- readRDS("./data/SQL/randomCtIcd101819.rds")
 
 
 
+
+
+
 # ******** -----
 # A. LYME -----------------------------------------------------------------
 
@@ -34,18 +37,6 @@ summarytools::dfSummary(lyme) %>% summarytools::view()
 
 
 # 2. check
-hist(as.numeric(lyme$MemberId)) 
-summary(as.numeric(lyme$MemberId)) # OK
-
-hist(as.numeric(lyme$DateServiceStarted)) 
-summary(as.numeric(lyme$DateServiceStarted))
-
-hist(as.numeric(lyme$DateServiceStopped)) 
-summary(as.numeric(lyme$DateServiceStopped))
-
-hist(lyme$MemberBirthYear) 
-summary(lyme$MemberBirthYear) 
-
 table(lyme$MemberGender, useNA = "always") 
 lyme[which(lyme$MemberGender == "U"), "MemberGender"] <- NA
 
@@ -86,14 +77,6 @@ ctSQL$DateServiceStarted <- ymd(ctSQL$DateServiceStarted)
 
 
 # 2. check
-hist(as.numeric(ctSQL$MemberId)) 
-summary(as.numeric(ctSQL$MemberId))
-
-hist(as.numeric(ctSQL$DateServiceStarted)) 
-summary(as.numeric(ctSQL$DateServiceStarted))
-
-hist(ctSQL$MemberBirthYear) 
-summary(ctSQL$MemberBirthYear) 
 
 table(ctSQL$MemberGender, useNA = "always")
 ctSQL[which(ctSQL$MemberGender == "U"), "MemberGender"] <- NA 
@@ -158,7 +141,7 @@ ct <- ct[tmp2, ]
 # ******** -----
 ## A.1. Saving Rdata ----
 
-outdirectory <- "data"
+outdirectory <- "LID_data_012721"
 outfilename <- "case_control_102819.Rdata"
 save(file=file.path(outdirectory,outfilename), 
      lyme, ct)

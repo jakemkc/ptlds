@@ -1,30 +1,36 @@
 ## Nov 27 2018
 ## Goal: Lyme, clyme, and PTLDS data cleaenup
 
-rm(list=ls()) # clear workspace;  # ls() # list objects in the workspace
-# cmd-shit-f10: restart R. reset loaded settings & library etc
+rm(list=ls()) 
 cat("\014")   # same as ctrl-L
-options(max.print=3000) # default 1000, and rstudio set at 5000
+options(max.print=3000) 
 options(warn=1) # default = 0. To check loop warnings
 # quartz(height=6, width=8)
-# dev.off() # reset par
-# dev.new() # new plot window
-# getwd()
+
 
 
 # Load data
-lyme <- readRDS("/Volumes/O2_transfer/data/SQL/lyme112518.rds")  # lyme
-clyme <- readRDS("/Volumes/O2_transfer/data/SQL/clyme112518.rds")  # clyme
-ptlds <- readRDS("/Volumes/O2_transfer/data/SQL/ptlds112518.rds")  # ptlds
+lyme <- readRDS("data/SQL/lyme112518.rds")  # lyme
+clyme <- readRDS("data/SQL/clyme112518.rds")  # clyme
+ptlds <- readRDS("data/SQL/ptlds112518.rds")  # ptlds
 
 
-
+library(tidyverse); library(lubridate)
 
 
 # ******** -----
-# A. Exploration & Cleanup -----------------------------------------------------------------
+# 0. Lyme def with AB -----------------------------------------------------------------
+# 012821
+lymeWab <- readRDS("LID_data_012721/lymeWab.rds")  # lyme
 
-library(tidyverse); library(lubridate)
+lyme <- lyme %>% inner_join(lymeWab %>% select(MemberId), by = "MemberId")
+clyme <- clyme %>% inner_join(lymeWab %>% select(MemberId), by = "MemberId")
+ptlds <- ptlds %>% inner_join(lymeWab %>% select(MemberId), by = "MemberId")
+
+rm(lymeWab)
+
+# ******** -----
+# A. Exploration & Cleanup -----------------------------------------------------------------
 
 
 # .\ lyme ----
@@ -196,7 +202,7 @@ ptlds[which(ptlds$age > 100), "age"] <- 100
 # ******** -----
 ## A.1. Saving Rdata ----
 
-outdirectory <- "data"
+outdirectory <- "LID_data_012721"
 outfilename <- "desc_cleanup_lyme_clyme_ptlds_NOT_exclusive.Rdata"
 save(file=file.path(outdirectory,outfilename), 
      lyme, clyme, ptlds)
@@ -206,19 +212,63 @@ save(file=file.path(outdirectory,outfilename),
 
 ## unique lyme
 tmp1 <- setdiff(lyme$HmsAetnaLineId, clyme$HmsAetnaLineId)
-tmp1 %>% length # 44 420
+tmp1 %>% length # 44 420 # 012821: 7503
 lyme <- anti_join(lyme, clyme, by = "HmsAetnaLineId")
 
 ## unique clyme
 tmp2 <- setdiff(clyme$HmsAetnaLineId, ptlds$HmsAetnaLineId)
-tmp2 %>% length # 2685
+tmp2 %>% length # 2685 # 012821: 275
 clyme <- anti_join(clyme, ptlds, by = "HmsAetnaLineId")
+
+
+# # ******** -----
+## 020721 Table 1 demo for Aim 2
+## Descriptive for paper
+
+rm(clyme)
+lymewps <- lyme
+
+## Load data
+load("./LID_data_012721/case_control_wAB_030920_onlyAB.Rdata") # Aim 1 data
+rm(ct); rm(lyme); rm(ctWab)
+
+## left join
+ptlds <- ptlds %>% left_join(lymeWab %>% select(MemberId, uniqueCtIcd, stateID), by = "MemberId")
+lymewps <- lymewps %>% left_join(lymeWab %>% select(MemberId, uniqueCtIcd, stateID), by = "MemberId")
+
+# Table numbers
+summarytools::dfSummary(ptlds) %>% summarytools::view() # PTLDS
+summarytools::dfSummary(lymewps) %>% summarytools::view() # Lyme WPS
+summarytools::freq(ptlds$stateID, order = "freq")
+
+
+## prepare dataframe
+tableData <- bind_rows("ptlds" = ptlds, "lymeWPS" = lymewps, .id = "groups")
+
+tableData$groups <- as.factor(tableData$groups)
+tableData$MemberGender <- as.factor(tableData$MemberGender)
+
+levels(tableData$groups)
+contrasts(tableData$groups) # LymeWPS = 0, PTLDS = 1
+
+levels(tableData$MemberGender)
+contrasts(tableData$MemberGender) # F = 0, M = 1
+
+## Singificant Tests
+glm(age ~ groups, data = tableData, family = "gaussian") %>% summary
+with(tableData, plot(as.factor(groups), age))
+
+glm(MemberGender ~ groups, data = tableData, family = "binomial") %>% summary # Y male = 1
+with(tableData, plot(groups, MemberGender))
+
+glm(uniqueCtIcd ~ groups, data = tableData, family = "gaussian") %>% summary
+
 
 
 # ******** -----
 ## A.1. Saving Rdata ----
 
-outdirectory <- "data"
+outdirectory <- "LID_data_012721"
 outfilename <- "desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata"
 save(file=file.path(outdirectory,outfilename), 
      lyme, clyme, ptlds)

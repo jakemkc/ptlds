@@ -29,13 +29,13 @@ switchAllZip <- "Y" # Y = ref pop will all zip from aetna; N = only lyme's match
 ### A. read-data ------------------------------------------------------------
 
 # exclusive data
-load("/Volumes/O2_transfer/data/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata")
+load("LID_data_012721/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata")
 
 # ref pop
 if (switchAllZip == "Y") {
-    refpop <- readRDS("/Volumes/O2_transfer/data/allzipbyyearpop.rds")
+    refpop <- readRDS("data/allzipbyyearpop.rds")
 } else {
-    refpop <- readRDS("/Volumes/O2_transfer/data/zipbyyearpop.rds") 
+    refpop <- readRDS("data/zipbyyearpop.rds") 
 }
 
 
@@ -206,7 +206,7 @@ plotPTLDS <- function(year, saveName) {
   m_cont <- tm_shape(US_state_boundary_cont, projection = 2163) +
       tm_borders(lwd = 0.8, col = "black", alpha = 0.5) +
       tm_shape(US_cont) +
-      tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 6, by = 1), 
+      tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(0.9, 3, by = 0.9), 
                   palette = pal2(6), title = "legend", showNA = FALSE, colorNA = NULL) + 
       tm_layout(title = "Count of PTLDS, per ZCTA", 
                 title.position = c("center", "top"), 
@@ -217,7 +217,7 @@ plotPTLDS <- function(year, saveName) {
   
   ## plot Alaska inset
   m_AK <- tm_shape(US_AK, projection = 3338) +
-      tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 6, by = 1), showNA = FALSE, colorNA = NULL) +
+      tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(0.9, 3, by = 0.9), showNA = FALSE, colorNA = NULL) +
       tm_shape(US_state_boundary_AK) + 
       tm_borders(lwd = 1, col = "black", alpha = .5) +
       tm_layout("Alaska", legend.show = FALSE, bg.color = NA, title.size = 0.8, frame = FALSE)
@@ -225,7 +225,7 @@ plotPTLDS <- function(year, saveName) {
   
   ## plot Hawaii inset
   m_HI <- tm_shape(US_HI, projection = 3759) +
-      tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 6, by = 1), showNA = FALSE, colorNA = NULL) +
+      tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(0.9, 3, by = 0.9), showNA = FALSE, colorNA = NULL) +
       tm_shape(US_state_boundary_HI) + 
       tm_borders(lwd = 1, col = "black", alpha = .5) +
       tm_layout("Hawaii", legend.show = FALSE, bg.color = NA, title.position = c("LEFT", "BOTTOM"), title.size = 0.8, frame = FALSE)
@@ -239,17 +239,18 @@ plotPTLDS <- function(year, saveName) {
   ## save map
   tmap_mode("plot")
   
-  outdirectory <- "results"
+  outdirectory <- "LID_results_012721"
   outfilename <- sprintf("map_%s_%s.png", saveName, year)
   tmap_save(m_cont, file.path(outdirectory, outfilename), scale = 0.8, outer.margins = 0, dpi = 900,
             insets_tm = list(m_AK, m_HI), 
             insets_vp = list(vp_AK, vp_HI))
 }
 
+# sup figure 4
 plotPTLDS(2009, "ptlds_count")
-plotPTLDS(2010, "ptlds_count")
-plotPTLDS(2011, "ptlds_count")
-plotPTLDS(2012, "ptlds_count")
+# plotPTLDS(2010, "ptlds_count")
+# plotPTLDS(2011, "ptlds_count")
+# plotPTLDS(2012, "ptlds_count")
 plotPTLDS(2013, "ptlds_count")
 
 
@@ -335,7 +336,7 @@ plotLYME <- function(year, saveName) {
     m_cont <- tm_shape(US_state_boundary_cont, projection = 2163) +
         tm_borders(lwd = 0.8, col = "black", alpha = 0.5) +
         tm_shape(US_cont) +
-        tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 61, by = 10), 
+        tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 12, by = 2), 
                     palette = pal2(6), title = "legend", showNA = FALSE, colorNA = NULL) + # showNA = legend with missing or not; colorNA = Null (transparent)
         tm_layout(title = "Count of Lymes, per ZCTA", 
                   title.position = c("center", "top"), 
@@ -346,7 +347,7 @@ plotLYME <- function(year, saveName) {
     
     ## plot Alaska inset
     m_AK <- tm_shape(US_AK, projection = 3338) +
-        tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 61, by = 10), showNA = FALSE, colorNA = NULL) +
+        tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 12, by = 2), showNA = FALSE, colorNA = NULL) +
         tm_shape(US_state_boundary_AK) + 
         tm_borders(lwd = 1, col = "black", alpha = .5) +
         tm_layout("Alaska", legend.show = FALSE, bg.color = NA, title.size = 0.8, frame = FALSE)
@@ -354,7 +355,7 @@ plotLYME <- function(year, saveName) {
     
     ## plot Hawaii inset
     m_HI <- tm_shape(US_HI, projection = 3759) +
-        tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 61, by = 10), showNA = FALSE, colorNA = NULL) +
+        tm_polygons("n", border.col = NA, border.alpha = NA, lwd = 0, breaks = seq(1, 12, by = 2), showNA = FALSE, colorNA = NULL) +
         tm_shape(US_state_boundary_HI) + 
         tm_borders(lwd = 1, col = "black", alpha = .5) +
         tm_layout("Hawaii", legend.show = FALSE, bg.color = NA, title.position = c("LEFT", "BOTTOM"), title.size = 0.8, frame = FALSE)
@@ -368,17 +369,18 @@ plotLYME <- function(year, saveName) {
     ## save map
     tmap_mode("plot")
     
-    outdirectory <- "results"
+    outdirectory <- "LID_results_012721"
     outfilename <- sprintf("map_%s_%s.png", saveName, year)
     tmap_save(m_cont, file.path(outdirectory, outfilename), scale = 0.8, outer.margins = 0, dpi = 900,
               insets_tm = list(m_AK, m_HI), 
               insets_vp = list(vp_AK, vp_HI))
 }
 
+# sup figure 4
 plotLYME(2009, "lyme_count")
-plotLYME(2010, "lyme_count")
-plotLYME(2011, "lyme_count")
-plotLYME(2012, "lyme_count")
+# plotLYME(2010, "lyme_count")
+# plotLYME(2011, "lyme_count")
+# plotLYME(2012, "lyme_count")
 plotLYME(2013, "lyme_count")
 
 

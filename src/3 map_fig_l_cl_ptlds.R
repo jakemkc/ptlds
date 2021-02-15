@@ -27,14 +27,14 @@ switchAllZip <- "Y" # Y = ref pop will all zip from aetna; N = only lyme's match
 ### A. read-data ------------------------------------------------------------
 
 # exclusive data
-load("/Volumes/O2_transfer/data/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata")
+load("LID_data_012721/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata")
 
 
 # ref pop
 if (switchAllZip == "Y") {
-    refpop <- readRDS("/Volumes/O2_transfer/data/allzipbyyearpop.rds")
+    refpop <- readRDS("data/allzipbyyearpop.rds")
 } else {
-    refpop <- readRDS("/Volumes/O2_transfer/data/zipbyyearpop.rds") 
+  refpop <- readRDS("data/zipbyyearpop.rds") 
 }
 
 
@@ -231,6 +231,7 @@ str(plotdata)
 
 library(broom)
 
+# supp table 1
 # Lyme
 lymefit1 <- plotdata %>% group_by(StateAbbr) %>% filter(disease == "Lyme") %>% do(fit = lm(diseaseProp ~ yearstarted, data = .))
 lymecoef <- lymefit1 %>% tidy(fit) %>% filter (term == "yearstarted") %>% ungroup
@@ -244,5 +245,10 @@ ptldscoef$fdr <- p.adjust(ptldscoef$p.value, method = 'fdr')
 
 
 
+# # ******** -----
+# ## A.1. Saving Rdata ----
 
+write_csv(plotdata, path = file.path("LID_results_012721", "supp_table_1_left.csv"))
+write_csv(lymecoef, path = file.path("LID_results_012721", "supp_table_1_right_lymecoef.csv"))
+write_csv(ptldscoef, path = file.path("LID_results_012721", "supp_table_1_right_ptldscoef_.csv"))
 

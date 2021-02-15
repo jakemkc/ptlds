@@ -9,7 +9,7 @@ options(warn=1) # default = 0
 
 
 ## Load data
-load("./data/case_control_102819.Rdata")
+load("./LID_data_012721/case_control_102819.Rdata")
 
 # SQL drug and anti df
 lymedrug040118 <- readRDS("./data/SQL/lymealldrug112918.rds")  # lyme
@@ -196,17 +196,65 @@ ctWab <- addDrugInfoVar(ct, ctdrug101719)
 ctWab <- addAntiInfo(ctWab, ctanti101719)
 
 lymeWab <- lymeWab %>% filter(AntiInfo == 1) # dim: 7859 x 10
+# above has Druginfo all == 1, and AntiInfo all == 1
 
 ctWab <- ctWab %>% filter(DrugInfo == 1) # dim: 32735 x 12; I don't have enough control
+# above has Druginfo all == 1, and AntiInfo 1201 == 1, 31534 ==0
+
+# # ******** -----
+## 020721 Table 1 demo for Aim 1
+## Descriptive for paper
+summarytools::dfSummary(lymeWab) %>% summarytools::view()
+summarytools::dfSummary(ctWab) %>% summarytools::view()
+summarytools::freq(ctWab$stateID, order = "freq")
+
+
+## prepare dataframe
+tableData <- bind_rows("lyme" = lymeWab, "control" = ctWab, .id = "groups")
+
+tableData$groups <- as.factor(tableData$groups)
+tableData$MemberGender <- as.factor(tableData$MemberGender)
+tableData$AntiInfo <- as.factor(tableData$AntiInfo)
+
+
+levels(tableData$groups)
+contrasts(tableData$groups) # ct = 0, lyme = 1
+
+levels(tableData$MemberGender)
+contrasts(tableData$MemberGender) # F = 0, M = 1
+
+levels(tableData$AntiInfo)
+contrasts(tableData$AntiInfo) # 0 = 0, 1 = 1
+
+
+## Singificant Tests
+glm(age ~ groups, data = tableData, family = "gaussian") %>% summary
+with(tableData, plot(as.factor(groups), age))
+
+glm(MemberGender ~ groups, data = tableData, family = "binomial") %>% summary # Y male = 1
+with(tableData, plot(groups, MemberGender))
+
+glm(uniqueCtIcd ~ groups, data = tableData, family = "gaussian") %>% summary
+
+glm(AntiInfo ~ groups, data = tableData, family = "binomial") %>% summary
+with(tableData, plot(groups, AntiInfo))
+
+tmp1 <- glm(AntiInfo ~ groups, data = tableData, family = "binomial")
+anova(tmp1, test="Rao")
+chisq.test(table(tableData$AntiInfo, tableData$groups))
+
 
 
 # # ******** -----
 ## A.1. Saving Rdata ----
 
-outdirectory <- "data"
+outdirectory <- "LID_data_012721"
 outfilename <- "case_control_wAB_030920_onlyAB.Rdata"
 save(file=file.path(outdirectory,outfilename),
      lyme, ct, lymeWab, ctWab)
 
+
+## 
+# saveRDS(lymeWab, "./LID_data_012721/lymeWab.rds")
 
 

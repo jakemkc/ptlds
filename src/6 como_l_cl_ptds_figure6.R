@@ -9,8 +9,8 @@ options(warn=1) # default = 0. To check loop warnings
 
 
 # Load data
-load("/Volumes/O2_transfer/data/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata") 
-lyme3como <- readRDS("/Volumes/O2_transfer/data/SQL/lymecomo113018.rds")  # lyme
+load("LID_data_012721/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata") 
+lyme3como <- readRDS("data/SQL/lymecomo113018.rds")  # lyme
 
 
 
@@ -754,6 +754,12 @@ clymecomoClass <- chronicDiseasePrep(clymecomo)
 ptldscomoClass <- chronicDiseasePrep(ptldscomo)
 
 
+# 012821
+lymecomoClass <- lymecomoClass %>% filter(chronicClass != "n____")
+clymecomoClass <- clymecomoClass %>% filter(chronicClass != "n____")
+ptldscomoClass <- ptldscomoClass %>% filter(chronicClass != "n____")
+
+
 # intermediate data prep
 
 dataprepClass <- function(lymecomoClass) {
@@ -782,10 +788,6 @@ lymecomoClassInt <- dataprepClass(lymecomoClass)
 clymecomoclassInt <- dataprepClass(clymecomoClass)
 ptldscomoClassInt <- dataprepClass(ptldscomoClass)
 
-
-
-tmp1 <- ptldscomoClassInt %>% filter(chronicClass == "Rheumatoid_Arthritis")
-tmp1$MemberID %>% unique %>% length
 
 # plot data prep
 plotPrepClass <- function(lymecomoClassInt, lymecomo) {
@@ -816,6 +818,12 @@ plotPrepClass2 <- function(ptldscomoClassInt, ptlds) {
 ## plot
 # tmp1 <- plotPrepClass(lymecomoClassInt, lymecomo)
 tmp1 <- plotPrepClass2(lymecomoClassInt, lyme)
+
+## 012821
+# 9 como with enough N
+selectComo <- c("Hypothyroidism", "Anemia", "Asthma", "Prostatic_Hyperplasia", "Glaucoma", "Hyperlipidemia", "Hypertension", "Osteoporosis", "Rheumatoid_Arthritis")
+tmp1 <- tmp1 %>% filter(chronicClass %in% selectComo)
+
 p <- newggslopegraph(
     dataframe = tmp1,
     Times = yeartype,
@@ -834,13 +842,19 @@ p <- newggslopegraph(
     Title = "chronic diseases comobidity",
     SubTitle = "+ and - 2 years from first report of lyme; ICD % is shown")
 
-# ggsave("./results/lymecomoClass.png", plot = p, scale = 1, dpi = 400)
-# ggsave("./results/lymecomoClass.pdf", plot = p, scale = 1, dpi = 400)
+# ggsave("./results/lymecomoClass.png", plot = p, scale = 1, dpi = 400) 
+ggsave("./LID_results_012721/lymecomoClass.pdf", plot = p, scale = 0.6, dpi = 400, width = 16, height = 12, units = "in") #figure 2
 
 
 
 # tmp1 <- plotPrepClass(ptldscomoClassInt, ptldscomo)
 tmp1 <- plotPrepClass2(ptldscomoClassInt, ptlds)
+
+## 012821
+# 9 como with enough N
+selectComo <- c("Hypothyroidism", "Anemia", "Asthma", "Prostatic_Hyperplasia", "Glaucoma", "Hyperlipidemia", "Hypertension", "Osteoporosis", "Rheumatoid_Arthritis")
+tmp1 <- tmp1 %>% filter(chronicClass %in% selectComo)
+
 p <- newggslopegraph(
     dataframe = tmp1,
     Times = yeartype,
@@ -860,259 +874,7 @@ p <- newggslopegraph(
     SubTitle = "+ and - 2 years from first report of lyme; ICD % is shown")
 
 # ggsave("./results/ptldscomoClass.png", plot = p, scale = 1, dpi = 400)
-# ggsave("./results/ptldscomoClass.pdf", plot = p, scale = 1, dpi = 400)
-
-### ........ ---------------------------------------------------------------
-### E. updated Plot-byclass-age ------------------------------------------------------------
-## updated code. same Y interpretation as above without by age, and in cross-over sense
-
-
-
-# intermediate data prep, age group
-
-dataprepClassAge <- function(lymecomoClass, switchAge) {
-  
-  lymecomoClass$age <- 2017 - lymecomoClass$MemberBirthYear
-  lymecomoClass[which(lymecomoClass$age > 100), "age"] <- 100
-  
-  lymecomoClass$year <- year(ymd(lymecomoClass$DateServiceStarted))
-  lymecomoClass$coyear <- year(ymd(lymecomoClass$coICDdate))
-  
-  lymecomoClass <- lymecomoClass %>% select(-c(HMSAetnaLineID, DateServiceStarted, MemberBirthYear, coICDdate))
-  
-  lymecomoClass$yeartype <- case_when(
-    lymecomoClass$coyear - lymecomoClass$year == 2 ~ "p5_post2",
-    lymecomoClass$coyear - lymecomoClass$year == 1 ~ "p4_post1",
-    lymecomoClass$coyear - lymecomoClass$year == 0 ~ "p3_baseline",
-    lymecomoClass$coyear - lymecomoClass$year == -1 ~ "p2_pre1",
-    lymecomoClass$coyear - lymecomoClass$year == -2 ~ "p1_pre2")
-  
-  lymecomoClass <- lymecomoClass %>% filter(!is.na(yeartype)) %>% distinct 
-  
-  if (switchAge == "1") {
-    lymecomoClass <- lymecomoClass %>% filter(age <= 35)
-  } else {
-    lymecomoClass <- lymecomoClass %>% filter(age > 35)
-  }
-  
-  return(lymecomoClass)
-}
-
-
-
-lymecomoClassAgeInt1 <- dataprepClassAge(lymecomoClass, "1")
-lymecomoClassAgeInt2 <- dataprepClassAge(lymecomoClass, "2")
-
-clymecomoclassAgeInt1 <- dataprepClassAge(clymecomoClass, "1")
-clymecomoclassAgeInt2 <- dataprepClassAge(clymecomoClass, "2")
-
-ptldscomoClassAgeInt1 <- dataprepClassAge(ptldscomoClass, "1")
-ptldscomoClassAgeInt2 <- dataprepClassAge(ptldscomoClass, "2")
-
-
-# similar function as in D. 
-plotPrepClass3_young35 <- function(ptldscomoClassAgeInt1, ptlds) {
-  tmp1 <- ptldscomoClassAgeInt1 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct() %>% group_by(yeartype, chronicClass) %>% count() %>% arrange(desc(chronicClass)) %>% as.data.frame 
-  tmpAge <- ptlds %>% filter(age <= 35)
-  tmp2 <- tmp1 %>% filter(!(yeartype == "p1_pre2")) %>% mutate(total = nrow(tmpAge))
-  tmp2$percentN <- (tmp2$n/tmp2$total*100) %>% round(., digits = 2)
-  tmp2$chronicClass <- tmp2$chronicClass %>% as.factor
-  tmp2$yeartype <- tmp2$yeartype %>% factor(., ordered = TRUE) # can't use as.factor() here
-  levels(tmp2$yeartype) <- c("previous_1_yr", "baseline", "next_1_yr", "next_2_yrs")
-  return(tmp2)
-}
-
-plotPrepClass3_old35 <- function(ptldscomoClassAgeInt1, ptlds) {
-  tmp1 <- ptldscomoClassAgeInt1 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct() %>% group_by(yeartype, chronicClass) %>% count() %>% arrange(desc(chronicClass)) %>% as.data.frame 
-  tmpAge <- ptlds %>% filter(age > 35)
-  tmp2 <- tmp1 %>% filter(!(yeartype == "p1_pre2")) %>% mutate(total = nrow(tmpAge))
-  tmp2$percentN <- (tmp2$n/tmp2$total*100) %>% round(., digits = 2)
-  tmp2$chronicClass <- tmp2$chronicClass %>% as.factor
-  tmp2$yeartype <- tmp2$yeartype %>% factor(., ordered = TRUE) # can't use as.factor() here
-  levels(tmp2$yeartype) <- c("previous_1_yr", "baseline", "next_1_yr", "next_2_yrs")
-  return(tmp2)
-}
-
-
-
-## plot
-# tmp1 <- plotPrepClass(lymecomoClassAgeInt3, lymecomo)
-tmp1 <- plotPrepClass3_young35(lymecomoClassAgeInt1, lyme)
-tmp1 <- plotPrepClass3_old35(lymecomoClassAgeInt2, lyme)
-p <- newggslopegraph(
-  dataframe = tmp1,
-  Times = yeartype,
-  # Measurement = n.x, 
-  Measurement = percentN, 
-  Grouping = chronicClass,
-  # # tune
-  # XTextSize = 15, # top baseline x label sie
-  # YTextSize = 4, # disease name size
-  # DataTextSize = 3.5,
-  # tuen for printing
-  XTextSize = 20, # top baseline x label sie
-  YTextSize = 4.5, # disease name size
-  DataTextSize = 4.5,
-  WiderLabels = TRUE,
-  Title = "chronic diseases comobidity",
-  SubTitle = "+ and - 2 years from first report of lyme; ICD incidence is shown")
-
-# ggsave("./results/lymecomoClassAgeyoung35.pdf", plot = p, scale = 1, dpi = 400)
-# ggsave("./results/lymecomoClassAgeold35.pdf", plot = p, scale = 1, dpi = 400)
-
-# ggsave("./results/lymecomoClassAge1.png", plot = p, scale = 1, dpi = 400)
-# ggsave("./results/lymecomoClassAge3.png", plot = p, scale = 1, dpi = 400)
-
-
-
-# tmp1 <- plotPrepClass(ptldscomoClassAgeInt3, ptldscomo)
-tmp1 <- plotPrepClass3_young35(ptldscomoClassAgeInt1, ptlds)
-tmp1 <- plotPrepClass3_old35(ptldscomoClassAgeInt2, ptlds)
-p <- newggslopegraph(
-  dataframe = tmp1,
-  Times = yeartype,
-  # Measurement = n.x, 
-  Measurement = percentN, 
-  Grouping = chronicClass,
-  # # tune
-  # XTextSize = 15, # top baseline x label sie
-  # YTextSize = 4, # disease name size
-  # DataTextSize = 3.5,
-  # tuen for printing
-  XTextSize = 20, # top baseline x label sie
-  YTextSize = 4.5, # disease name size
-  DataTextSize = 4.5,
-  WiderLabels = TRUE,
-  Title = "chronic diseases comobidity",
-  SubTitle = "+ and - 2 years from first report of lyme; ICD incidence is shown")
-
-
-# ggsave("./results/ptldscomoClassAgeyoung35.pdf", plot = p, scale = 1, dpi = 400)
-# ggsave("./results/ptldscomoClassAgeold35.pdf", plot = p, scale = 1, dpi = 400)
-
-# ggsave("./results/ptldscomoClassAge1.png", plot = p, scale = 1, dpi = 400)
-# ggsave("./results/ptldscomoClassAge3.png", plot = p, scale = 1, dpi = 400)
-
-
-
-
-
-### ........ ---------------------------------------------------------------
-### F. Test ------------------------------------------------------------
-
-
-
-## Join comorbidity info to lyme for a cross-over wide format df
-
-mcnemarTest <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p4_post1) {
-  tmp1 <- ptldscomoClassInt %>% filter(yeartype == "p2_pre1", chronicClass == Rheumatoid_Arthritis)
-
-  tmp2 <- tmp1 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct() # remove duplicate as disease instead of ICD
-  
-  tmp3 <- left_join(ptlds, tmp2, by = c("MemberId" = "MemberID"))
-  
-  # extract another time point
-  tmp4 <- ptldscomoClassInt %>% filter(yeartype == p4_post1, chronicClass == Rheumatoid_Arthritis)
-  
-  tmp5 <- tmp4 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct()
-  
-  tmp6 <- left_join(tmp3, tmp5, by = c("MemberId" = "MemberID"))
- 
-  ## replace NA in chronic varaible
-  tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no") 
-  tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no") 
-  
-  ## create table
-  mat1 <- table(tmp6$chronicClass.x, tmp6$chronicClass.y)
-  
-  names(dimnames(mat1)) = c("p2_pre1", "p4_pos1")
-   
-  # margin.table(mat1, 1)
-  # margin.table(mat1, 2)
-  # sum(mat1)
-  
-  tmp7 <- mcnemar.test(mat1, correct=FALSE)
-  
-  tmp7$p.value
-  
-}
-
-
-
-lymeMcNemar <- tibble(disease = names(chronicDisease))
-ptldsMcNemar <- tibble(disease = names(chronicDisease))
-
-lymeMcNemar <- bind_cols(lymeMcNemar, "pre_1_post_1" = map_dbl(names(chronicDisease), possibly(mcnemarTest, NA), lyme, lymecomoClassInt, "p4_post1"))
-lymeMcNemar$fdr <- p.adjust(lymeMcNemar$pre_1_post_1)
-
-
-ptldsMcNemar <- bind_cols(ptldsMcNemar, "pre_1_post_1" = map_dbl(names(chronicDisease), possibly(mcnemarTest, NA), ptlds, ptldscomoClassInt, "p4_post1"))
-ptldsMcNemar$fdr <- p.adjust(ptldsMcNemar$pre_1_post_1)
-
-
-
-mcnemarPercentPre <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p4_post1) {
-    tmp1 <- ptldscomoClassInt %>% filter(yeartype == "p2_pre1", chronicClass == Rheumatoid_Arthritis)
-    
-    tmp2 <- tmp1 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct() # remove duplicate as disease instead of ICD
-    
-    tmp3 <- left_join(ptlds, tmp2, by = c("MemberId" = "MemberID"))
-    
-    # extract another time point
-    tmp4 <- ptldscomoClassInt %>% filter(yeartype == p4_post1, chronicClass == Rheumatoid_Arthritis)
-    
-    tmp5 <- tmp4 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct()
-    
-    tmp6 <- left_join(tmp3, tmp5, by = c("MemberId" = "MemberID"))
-    
-    ## replace NA in chronic varaible
-    tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no") 
-    tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no") 
-    
-    ## percentage of disease
-    tmp7 <- summarytools::freq(tmp6$chronicClass.x, order = "freq")
-    
-    tmp7[2,2]
-}
-
-
-lymeMcNemar <- bind_cols(lymeMcNemar, "PercentPre" = map_dbl(names(chronicDisease), possibly(mcnemarPercentPre, NA), lyme, lymecomoClassInt, "p4_post1"))
-ptldsMcNemar <- bind_cols(ptldsMcNemar, "PercentPre" = map_dbl(names(chronicDisease), possibly(mcnemarPercentPre, NA), ptlds, ptldscomoClassInt, "p4_post1"))
-
-
-mcnemarPercentPost <- function(Rheumatoid_Arthritis, ptlds, ptldscomoClassInt, p4_post1) {
-    tmp1 <- ptldscomoClassInt %>% filter(yeartype == "p2_pre1", chronicClass == Rheumatoid_Arthritis)
-    
-    tmp2 <- tmp1 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct()
-    
-    tmp3 <- left_join(ptlds, tmp2, by = c("MemberId" = "MemberID"))
-    
-    # extract another time point
-    tmp4 <- ptldscomoClassInt %>% filter(yeartype == p4_post1, chronicClass == Rheumatoid_Arthritis)
-    
-    tmp5 <- tmp4 %>% select(-c(coICD, age, EmployeeZipCode, MemberGender)) %>% distinct()
-    
-    tmp6 <- left_join(tmp3, tmp5, by = c("MemberId" = "MemberID"))
-    
-    ## replace NA in chronic varaible
-    tmp6$chronicClass.x <- replace_na(tmp6$chronicClass.x, "no")
-    tmp6$chronicClass.y <- replace_na(tmp6$chronicClass.y, "no")
-    
-    ## percentage of disease
-    tmp7 <- summarytools::freq(tmp6$chronicClass.y, order = "freq")
-    
-    tmp7[2,2]
-}
-
-lymeMcNemar <- bind_cols(lymeMcNemar, "PercentPost" = map_dbl(names(chronicDisease), possibly(mcnemarPercentPost, NA), lyme, lymecomoClassInt, "p4_post1"))
-lymeMcNemar$changefromPre <- lymeMcNemar$PercentPost-lymeMcNemar$PercentPre
-
-ptldsMcNemar <- bind_cols(ptldsMcNemar, "PercentPost" = map_dbl(names(chronicDisease), possibly(mcnemarPercentPost, NA), ptlds, ptldscomoClassInt, "p4_post1"))
-ptldsMcNemar$changefromPre <- ptldsMcNemar$PercentPost-ptldsMcNemar$PercentPre
-
-
-
-
+ggsave("./LID_results_012721/ptldscomoClass.pdf", plot = p, scale = 0.6, dpi = 400, width = 16, height = 12, units = "in") #figure 2
 
 
 
@@ -1209,7 +971,6 @@ maptmp1 <- map(names(chronicDisease), possibly(GetGEEdf, NA), "p4_post1")
 geedf <- bind_rows(maptmp1)
 
 
-
 ## CHECK case count in the model's key strata
 # all age
 # geedf %>% group_by(chronicDiseaseSwitch, TP, lymeDisease) %>% tally
@@ -1233,23 +994,6 @@ tmpa <- excelN(tmp1)
 
 
 
-# all age <= 35
-# geedf %>% group_by(chronicDiseaseSwitch, TP, lymeDisease) %>% tally
-tmp2 <- geedf %>% filter(age <= 35) %>%  group_by(chronicDiseaseSwitch, TP, lymeDisease) %>% summarise(
-  cases = sum(chronicClass != "no"),
-  totaln = n()
-)
-
-tmpb <- excelN(tmp2)
-
-# all age
-# geedf %>% group_by(chronicDiseaseSwitch, TP, lymeDisease) %>% tally
-tmp3 <- geedf %>% filter(age >35) %>%  group_by(chronicDiseaseSwitch, TP, lymeDisease) %>% summarise(
-  cases = sum(chronicClass != "no"),
-  totaln = n()
-)
-
-tmpc <- excelN(tmp3)
 
 
 ## PREPARE geedf variable structure
@@ -1282,6 +1026,7 @@ contrasts(geedf$lymeDisease) # lymedisease: 0 = lyme, 1 = ptlds
 
 
 ## RUN GEE glm 
+# table 3
 library(geepack); library(broom); library(tidyverse)
 
 
@@ -1336,104 +1081,15 @@ geeEstdf082520$fdr <- p.adjust(geeEstdf082520$p.value, method = 'fdr')
 
 
 
+# # ******** -----
+# ## A.1. Saving Rdata ----
 
-## **********************
-## age <= 35
-
-RunGeeGlm35 <- function(Rheumatoid_Arthritis, geedf) {
-  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age <= 35)
-  tmp2 <- geeglm(outcome ~ TP*lymeDisease + age + MemberGender, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable") %>% tidy
-  tmp2$chronicDisease <- Rheumatoid_Arthritis
-  return(tmp2)
-}
-
-RunGeeGlm35OR <- function(Rheumatoid_Arthritis, geedf) {
-  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age <= 35)
-  tmp2 <- geeglm(outcome ~ TP*lymeDisease + age + MemberGender, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
-  tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
-  tmp3$chronicDisease <- Rheumatoid_Arthritis
-  return(tmp3)
-}
-
-
-# Use OR
-maptmp3 <- map(names(chronicDisease), possibly(RunGeeGlm35OR, NA), geedf)
-geeEstdf3 <- bind_rows(maptmp3)
-geeEstdf3$fdr <- p.adjust(geeEstdf3$p.value, method = 'fdr')
+write_csv(tmpa, path = file.path("LID_results_012721", "table_3_N.csv"))
+write_csv(geeEstdf, path = file.path("LID_results_012721", "table_3_regression.csv"))
+write_csv(geeEstdf082520, path = file.path("LID_results_012721", "table_3_regression_unadj.csv"))
 
 
 
 
-
-# ## START ****************************************************************************************
-## unadjusted 082520
-RunGeeGlm35ORUnadj082520 <- function(Rheumatoid_Arthritis, geedf) {
-  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age <= 35)
-  tmp2 <- geeglm(outcome ~ TP*lymeDisease, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
-  tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
-  tmp3$chronicDisease <- Rheumatoid_Arthritis
-  return(tmp3)
-}
-
-
-# Use OR
-maptmp3082520 <- map(names(chronicDisease), possibly(RunGeeGlm35ORUnadj082520, NA), geedf)
-geeEstdf3082520 <- bind_rows(maptmp3082520)
-geeEstdf3082520$fdr <- p.adjust(geeEstdf3082520$p.value, method = 'fdr')
-
-# ## END ****************************************************************************************
-
-
-
-
-## **********************
-## age >35
-
-RunGeeGlm100 <- function(Rheumatoid_Arthritis, geedf) {
-  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age > 35)
-  tmp2 <- geeglm(outcome ~ TP*lymeDisease + age + MemberGender, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable") %>% tidy
-  tmp2$chronicDisease <- Rheumatoid_Arthritis
-  return(tmp2)
-}
-
-
-RunGeeGlm100OR <- function(Rheumatoid_Arthritis, geedf) {
-  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age > 35)
-  tmp2 <- geeglm(outcome ~ TP*lymeDisease + age + MemberGender, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
-  tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
-  tmp3$chronicDisease <- Rheumatoid_Arthritis
-  return(tmp3)
-}
-
-
-
-# Use OR
-maptmp4 <- map(names(chronicDisease), possibly(RunGeeGlm100OR, NA), geedf)
-geeEstdf4 <- bind_rows(maptmp4)
-geeEstdf4$fdr <- p.adjust(geeEstdf4$p.value, method = 'fdr')
-
-
-
-
-# ## START ****************************************************************************************
-## unadjusted 082520
-
-RunGeeGlm100ORUnadj082520 <- function(Rheumatoid_Arthritis, geedf) {
-  tmp1 <- geedf %>% filter(chronicDiseaseSwitch == Rheumatoid_Arthritis, age > 35)
-  tmp2 <- geeglm(outcome ~ TP*lymeDisease, id = MemberId, family = binomial, data = tmp1, corstr = "exchangeable")
-  tmp3 <- tidy(tmp2, conf.int = TRUE, conf.level = 0.95, exponentiate = TRUE, quick = FALSE)
-  tmp3$chronicDisease <- Rheumatoid_Arthritis
-  return(tmp3)
-}
-
-
-
-# Use OR
-maptmp4082520 <- map(names(chronicDisease), possibly(RunGeeGlm100ORUnadj082520, NA), geedf)
-geeEstdf4082520 <- bind_rows(maptmp4082520)
-geeEstdf4082520$fdr <- p.adjust(geeEstdf4082520$p.value, method = 'fdr')
-
-
-# ## END ****************************************************************************************
 
 

@@ -30,16 +30,17 @@
 
 ## Abstract
 ### *BACKGROUND*
-Post treatment Lyme disease syndrome (PTLDS) is used to describe a condition where Lyme disease patients have the infection cleared by antibiotic treatment but continue to experience persistent non-specific symptoms of fatigue, cognitive impairment, or musculoskeletal pain. The causes, diagnosis, and treatment of PTLDS remain elusive and some attribute the phenomenon to anchoring bias.
+Post treatment Lyme disease syndrome (PTLDS) is used to describe a condition where Lyme disease (LD) patients have received the recommended antibiotic treatment, but continue to experience persistent non-specific symptoms of fatigue, cognitive impairment, or musculoskeletal pain. The causes and diagnosis of PTLDS remain elusive, and some question the associations of prolonged symptoms with LD.
 
 ### *METHODS*
-The insurance claims database contained more than 9.8 billion billing records between 2008 and 2016. We 1) used a case-control design to test the associations of chronic fatigue, cognitive impairment, and musculoskeletal pain with Lyme disease (n = 244,463), and 2) employed a crossover design to investigate the association of 19 chronic conditions with PTLDS over Lyme disease (n = 45,938).
+The insurance claims database covering over 63 million de-identified individuals (20% of the US population) with 9·8 billion claims records between 2008 and 2016. We used case-control (n = 40 594) design to test the associations of chronic fatigue, cognitive impairment, and musculoskeletal pain with LD and employed a quasi-crossover design (n = 7 712) to explore the associations of 19 common chronic conditions with PTLDS over LD without prolonged symptoms.
 
 ### *RESULTS* 
-We found that chronic fatigue (OR 2.52, 95% CI 2.44–2.60) and musculoskeletal pain (OR 1.51, 95% CI 1.47–1.56) were associated with Lyme disease. The associations remained robust after adjusting for co-occurring chronic conditions and with incrementally more precise definition of Lyme cases. The PTLDS-to-Lyme patient ratio was 3.42%. Compared with Lyme disease cases, we found an enrichment of anemia (OR 1.46, 95% CI 1.11–1.92), hyperlipidemia (OR 1.39, 95% CI 1.15–1.68), and osteoarthrosis (OR 1.62, 95% CI 1.23–2.12) in PTLDS patients. 
+We found that chronic fatigue (OR 1·67, 95% CI 1·42–1·96) and musculoskeletal pain (OR 1·31, 95% CI 1·12–1·53) were associated with LD. The associations remained robust after adjusted for four co-occurring chronic conditions and after accounting for a potentially 70% misdiagnosis rate of LD in claims data (n = 2 358). The PTLDS-to-Lyme patient ratio was 2·79%. SOnly nine of the conditions had enough sample size for further interpretation. Although six chronic conditions were associated with a 10% higher risk for PTLDS (ORs from 1·12 to 2·19); however, none of the conditions was statistically significant after controlling for multiple hypotheses (FDR = 0·05).
+
 
 ### *CONCLUSION* 
-Chronic fatigue and musculoskeletal pain were sequelae associated with Lyme disease patients, suggesting the existence of PTLDS. Identified comorbidities of PTLDS may be a potential complement to the existing guideline for better diagnosis of the syndrome.
+Chronic fatigue and musculoskeletal pain are sequelae consistently and robustly associated with LD patients. Observation of prolonged non-specific symptoms in LD patients after antibiotic therapy is not likely simply by chance
 
 
 ## Getting Started

@@ -9,13 +9,60 @@ options(warn=1) # default = 0. To check loop warnings
 # dev.off() # reset par
 
 # Load data
-load("/Volumes/O2_transfer/data/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata")  
+load("LID_data_012721/desc_cleanup_lyme_clyme_ptlds_exclusive.Rdata")  
 
 
 # ******** -----
 # A. Lyme ---------------------------------------------------------------------------
 
 library(tidyverse); library(lubridate); library(gridExtra)
+
+
+## Functions ----
+theme_Publication <- function(base_size=14, base_family="Helvetica") {
+    library(grid)
+    library(ggthemes)
+    (theme_foundation(base_size=base_size, base_family=base_family)
+        + theme(plot.title = element_text(face = "bold",
+                                          size = rel(1.2), hjust = 0.5),
+                text = element_text(),
+                panel.background = element_rect(colour = NA),
+                plot.background = element_rect(colour = NA),
+                panel.border = element_rect(colour = NA),
+                axis.title = element_text(face = "bold",size = rel(1)),
+                axis.title.y = element_text(angle=90,vjust =2),
+                axis.title.x = element_text(vjust = -0.2),
+                axis.text = element_text(), 
+                axis.line = element_line(colour="black"),
+                axis.ticks = element_line(),
+                panel.grid.major = element_line(colour="#f0f0f0"),
+                panel.grid.minor = element_blank(),
+                legend.key = element_rect(colour = NA),
+                legend.position = "bottom",
+                legend.direction = "horizontal",
+                legend.key.size= unit(0.2, "cm"),
+                legend.margin = unit(0, "cm"),
+                legend.title = element_text(face="italic"),
+                plot.margin=unit(c(10,5,5,5),"mm"),
+                strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
+                strip.text = element_text(face="bold")
+        ))
+    
+}
+
+scale_fill_Publication <- function(...){
+    library(scales)
+    discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+    
+}
+
+scale_colour_Publication <- function(...){
+    library(scales)
+    discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
+    
+}
+
+
 
 # \\ sex ----
 table(lyme$MemberGender)
@@ -42,7 +89,7 @@ p <- ggplot(lyme, aes(x = age))
 p <- p + geom_histogram()
 # p
 
-ggsave("results/hist_l_age.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/hist_l_age.png", scale=1, dpi=400)
 
 
 # age * gender distribution
@@ -52,14 +99,14 @@ p <- p + scale_x_continuous(breaks = seq(0, 100, by = 10))
 
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
+ggsave("LID_results_012721/hist_freq_l_age_by_sex.pdf", scale=1, dpi=400) #supp fig 2A
 
-ggsave("results/hist_freq_l_age_by_sex.pdf", scale=1, dpi=400)
 
 p <- ggplot(data = subset(lyme, !is.na(MemberGender)), aes(x = MemberGender, y = age)) 
 p <- p + geom_violin(aes(fill = MemberGender)) + geom_boxplot(width = 0.2)
 p <- p + geom_jitter(shape=16, alpha = 0.05, size = 0.1, width = 0.05)
 
-ggsave("results/boxplot_l_age_by_sex.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/boxplot_l_age_by_sex.png", scale=1, dpi=400)
 
 
 
@@ -89,7 +136,7 @@ p <- p + geom_point() + geom_line() + geom_label(nudge_x = 30, size = 3, label.p
 p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 
 
-ggsave("results/timeseries_l.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/timeseries_l.png", scale=1, dpi=400)
 
 # when * gender
 # create dataset
@@ -115,7 +162,7 @@ p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 # p
 
-
+ggsave("LID_results_012721/timeseries_l_by_sex.pdf", scale=1, dpi=400) # suppl figure 3A
 
 
 # when * age
@@ -138,7 +185,7 @@ p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
 
-ggsave("results/timeseries_l_by_age.pdf", scale=1, dpi=400)
+# ggsave("LID_results_012721/timeseries_l_by_age.pdf", scale=1, dpi=400)
 
 # \\ location ----
 
@@ -171,7 +218,7 @@ sd(clyme$age, na.rm = TRUE)
 p <- ggplot(clyme, aes(x = age))
 p <- p + geom_histogram()
 
-ggsave("results/hist_cl_age.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/hist_cl_age.png", scale=1, dpi=400)
 
 
 # age * gender distribution
@@ -179,14 +226,14 @@ p <- ggplot(clyme, aes(x = age, color = MemberGender))
 p <- p + geom_freqpoly()
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
-ggsave("results/hist_freq_cl_age_by_sex.pdf", scale=1, dpi=400)
+# ggsave("LID_results_012721/hist_freq_cl_age_by_sex.pdf", scale=1, dpi=400)
 
 
 p <- ggplot(data = subset(clyme, !is.na(MemberGender)), aes(x = MemberGender, y = age)) 
 p <- p + geom_violin(aes(fill = MemberGender)) + geom_boxplot(width = 0.2)
 p <- p + geom_jitter(shape=16, alpha = 0.2, size = 0.2, width = 0.05)
 
-ggsave("results/boxplot_cl_age_by_sex.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/boxplot_cl_age_by_sex.png", scale=1, dpi=400)
 
 
 # \\ when ----
@@ -214,7 +261,7 @@ p <- p + geom_point() + geom_line() + geom_label(nudge_x = 30, size = 3, label.p
 p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 
 
-ggsave("results/timeseries_cl.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/timeseries_cl.png", scale=1, dpi=400)
 
 
 # when * gender
@@ -237,7 +284,7 @@ p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
 
-ggsave("results/timeseries_cl_by_sex.pdf", scale=1, dpi=400)
+# ggsave("LID_results_012721/timeseries_cl_by_sex.pdf", scale=1, dpi=400) # 
 
 
 # when * age (Not big bimodal issue in clyme)
@@ -260,7 +307,7 @@ p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
 
-ggsave("results/timeseries_cl_by_age.pdf", scale=1, dpi=400)
+# ggsave("LID_results_012721/timeseries_cl_by_age.pdf", scale=1, dpi=400)
 
 
 # \\ location ----
@@ -306,7 +353,7 @@ p <- ggplot(ptlds, aes(x = age))
 p <- p + geom_histogram()
 
 
-ggsave("results/hist_pt_age.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/hist_pt_age.png", scale=1, dpi=400)
 
 
 # age * gender distribution
@@ -317,14 +364,14 @@ p <- p + scale_x_continuous(breaks = seq(0, 100, by = 10))
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
 
-ggsave("results/hist_freq_pt_age_by_sex.pdf", scale=1, dpi=400)
+ggsave("LID_results_012721/hist_freq_pt_age_by_sex.pdf", scale=1, dpi=400) # supp figure 2B
 
 
 p <- ggplot(data = subset(ptlds, !is.na(MemberGender)), aes(x = MemberGender, y = age)) 
 p <- p + geom_violin(aes(fill = MemberGender)) + geom_boxplot(width = 0.2)
 p <- p + geom_jitter(shape=16, alpha = 0.2, size = 0.2, width = 0.05)
 
-ggsave("results/boxplot_pt_age_by_sex.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/boxplot_pt_age_by_sex.png", scale=1, dpi=400)
 
 
 
@@ -355,7 +402,7 @@ p <- p + geom_point() + geom_line() + geom_label(nudge_x = 30, size = 3, label.p
 p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 
 
-ggsave("results/timeseries_pt.png", scale=1, dpi=400)
+# ggsave("LID_results_012721/timeseries_pt.png", scale=1, dpi=400)
 
 
 # when * gender
@@ -377,6 +424,8 @@ p <- p + geom_point() + geom_line() + geom_label(nudge_x = 30, size = 6, label.p
 p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
+ggsave("LID_results_012721/timeseries_pt_by_sex.pdf", scale=1, dpi=400) # supp 3B
+
 
 # when * age (Not big bimodal issue in ptlds)
 ptlds_monthcount_a <- as.data.frame(table(ptlds$yearmon, cut(ptlds$age, breaks = c(0, 35, 100))))
@@ -397,52 +446,11 @@ p <- p + geom_point() + geom_line() + geom_label(nudge_x = 30, size = 3, label.p
 p <- p + theme(plot.margin = unit(c(0.3, 0.5, 0.3, 0.3), "cm"))
 grid.arrange(p, (p + scale_fill_Publication() + theme_Publication()), nrow = 1)
 
-ggsave("results/timeseries_pt_by_age.pdf", scale=1, dpi=400)
+# ggsave("LID_results_012721/timeseries_pt_by_age.pdf", scale=1, dpi=400)
 
 
 # \\ location ----
 
 
-theme_Publication <- function(base_size=14, base_family="Helvetica") {
-    library(grid)
-    library(ggthemes)
-    (theme_foundation(base_size=base_size, base_family=base_family)
-        + theme(plot.title = element_text(face = "bold",
-                                          size = rel(1.2), hjust = 0.5),
-                text = element_text(),
-                panel.background = element_rect(colour = NA),
-                plot.background = element_rect(colour = NA),
-                panel.border = element_rect(colour = NA),
-                axis.title = element_text(face = "bold",size = rel(1)),
-                axis.title.y = element_text(angle=90,vjust =2),
-                axis.title.x = element_text(vjust = -0.2),
-                axis.text = element_text(), 
-                axis.line = element_line(colour="black"),
-                axis.ticks = element_line(),
-                panel.grid.major = element_line(colour="#f0f0f0"),
-                panel.grid.minor = element_blank(),
-                legend.key = element_rect(colour = NA),
-                legend.position = "bottom",
-                legend.direction = "horizontal",
-                legend.key.size= unit(0.2, "cm"),
-                legend.margin = unit(0, "cm"),
-                legend.title = element_text(face="italic"),
-                plot.margin=unit(c(10,5,5,5),"mm"),
-                strip.background=element_rect(colour="#f0f0f0",fill="#f0f0f0"),
-                strip.text = element_text(face="bold")
-        ))
-    
-}
 
-scale_fill_Publication <- function(...){
-    library(scales)
-    discrete_scale("fill","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
-    
-}
-
-scale_colour_Publication <- function(...){
-    library(scales)
-    discrete_scale("colour","Publication",manual_pal(values = c("#386cb0","#fdb462","#7fc97f","#ef3b2c","#662506","#a6cee3","#fb9a99","#984ea3","#ffff33")), ...)
-    
-}
 
